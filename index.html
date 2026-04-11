@@ -25,14 +25,18 @@
   --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 body{font-family:var(--sans);background:var(--linen);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6}
-.pg{display:none}.pg.on{display:block}
+.pg{display:none;opacity:0}.pg.on{display:block;opacity:0}.pg.on.visible{opacity:1;transition:opacity .25s ease}
 
 nav{background:var(--navy-deep);padding:0 52px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;cursor:pointer}
 .logo img{height:24px;width:auto;display:block;opacity:0.92}
 .nav-links{display:flex;align-items:center;gap:32px}
-.nl{font-size:0.875rem;font-weight:400;color:rgba(255,255,255,0.62);cursor:pointer;background:none;border:none;letter-spacing:0.04em;transition:color .15s;padding:0}
+.nl{font-size:0.875rem;font-weight:400;color:rgba(255,255,255,0.62);cursor:pointer;background:none;border:none;letter-spacing:0.04em;transition:color .15s;padding:0;position:relative}
+.nl::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:#fff;transition:width .2s ease}
 .nl:hover{color:#fff}
+.nl:hover::after{width:100%}
+.nl.active{color:#fff}
+.nl.active::after{width:100%}
 .nl-cta{font-size:0.875rem;font-weight:500;color:#fff;background:var(--red);border:none;padding:9px 22px;cursor:pointer;letter-spacing:0.04em;transition:background .15s}
 .nl-cta:hover{background:var(--red-deep)}
 
@@ -276,7 +280,7 @@ textarea.fi{resize:none;min-height:90px;line-height:1.7}
 </nav>
 
 <!-- HOME -->
-<div class="pg on" id="home">
+<div class="pg" id="home">
 
   <section class="hero">
     <div class="hero-main">
@@ -708,41 +712,59 @@ streamlined services. Left a clear framework for evaluating and piloting
   <footer><div class="ft-brand"><div class="ft-logo"><img src="images/Arteri.png" alt="Arteri"></div><div class="ft-tag">Health &amp; Essential Services Design Studio. Designing organisations that support people through life's most complex moments.</div></div><div class="ft-col"><span class="ft-lbl">Services</span><a onclick="go('home','svc-business')">Business &amp; Service Design</a><a onclick="go('home','svc-policy')">Poli
 <script>
 function go(page, anchor) {
-  // Hide all pages
-  document.querySelectorAll('.pg').forEach(function(p) {
-    p.classList.remove('on');
+  // Fade out all visible pages
+  document.querySelectorAll('.pg.on').forEach(function(p) {
+    p.classList.remove('visible');
   });
 
-  // Show the target page
-  var target = document.getElementById(page);
-  if (target) {
-    target.classList.add('on');
-  }
+  setTimeout(function() {
+    // Hide all pages
+    document.querySelectorAll('.pg').forEach(function(p) {
+      p.classList.remove('on');
+    });
 
-  // Update active state on nav links
-  document.querySelectorAll('.nl').forEach(function(btn) {
-    btn.classList.remove('active');
-  });
-  document.querySelectorAll('.nl').forEach(function(btn) {
-    if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf("go('" + page + "')") !== -1) {
-      btn.classList.add('active');
+    // Show target page
+    var target = document.getElementById(page);
+    if (target) {
+      target.classList.add('on');
+      // Trigger fade in on next frame
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          target.classList.add('visible');
+        });
+      });
     }
-  });
 
-  // Scroll to anchor if provided, otherwise scroll to top
-  if (anchor) {
-    var el = document.getElementById(anchor);
-    if (el) {
-      setTimeout(function() { el.scrollIntoView({ behavior: 'smooth' }); }, 50);
+    // Update active nav state
+    document.querySelectorAll('.nl').forEach(function(btn) {
+      btn.classList.remove('active');
+      if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf("go('" + page + "')") !== -1) {
+        btn.classList.add('active');
+      }
+    });
+
+    // Scroll to anchor or top
+    if (anchor) {
+      var el = document.getElementById(anchor);
+      if (el) {
+        setTimeout(function() { el.scrollIntoView({ behavior: 'smooth' }); }, 50);
+      }
+    } else {
+      window.scrollTo(0, 0);
     }
-  } else {
-    window.scrollTo(0, 0);
-  }
+  }, 150);
 }
 
-// Set initial active nav state on load
+// Initialise on load
 document.addEventListener('DOMContentLoaded', function() {
-  var home = document.querySelector('.nl[onclick*="home"]');
-  // No active highlight needed on load — home is default
+  var home = document.getElementById('home');
+  if (home) {
+    home.classList.add('on');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        home.classList.add('visible');
+      });
+    });
+  }
 });
 </script>
