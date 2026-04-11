@@ -266,7 +266,7 @@ textarea.fi{resize:none;min-height:90px;line-height:1.7}
 <body>
 
 <nav>
-  <div class="logo" onclick="go('home')"><img src="images/image_01.png" alt="Arteri"></div>
+  <div class="logo" onclick="go('home')"><img src="images/Arteri.png" alt="Arteri"></div>
   <div class="nav-links">
     <button class="nl" onclick="go('about')">About</button>
     <button class="nl" onclick="go('work')">Our work</button>
@@ -706,3 +706,43 @@ streamlined services. Left a clear framework for evaluating and piloting
   <div class="article-body"><div class="article-content"><img src="https://images.squarespace-cdn.com/content/v1/61a35a710b6008246ef9139f/41d78cac-899d-4972-b99a-71920656485e/ArteriAcademy_blue.png?format=1500w" alt="Arteri Academy logo" style="max-width:360px"><p>Arteri Academy is here! Over the last year, our training team has been dedicated to researching, developing and testing concepts for delivering workforce training that equips organisations with the tools and techniques needed to drive more impact.</p><p>Today, we're thrilled to announce the launch of Arteri Academy, our comprehensive online training program dedicated to improving business outcomes with better business design. This launch marks a significant milestone in our mission to equip professionals with the skills needed to bridge the gap between strategy and execution, align user needs with business requirements, and transform creative ideas into practical implementations.</p></div></div>
   <div class="cta-band"><div class="cta-inner"><h2 class="cta-h">Ready to elevate your team's skills?</h2><div><p class="cta-body">Explore Arteri Academy and discover how we can help your team drive better business outcomes.</p><button class="btn-red" onclick="go('contact')">Get in touch</button></div></div></div>
   <footer><div class="ft-brand"><div class="ft-logo"><img src="images/Arteri.png" alt="Arteri"></div><div class="ft-tag">Health &amp; Essential Services Design Studio. Designing organisations that support people through life's most complex moments.</div></div><div class="ft-col"><span class="ft-lbl">Services</span><a onclick="go('home','svc-business')">Business &amp; Service Design</a><a onclick="go('home','svc-policy')">Poli
+<script>
+function go(page, anchor) {
+  // Hide all pages
+  document.querySelectorAll('.pg').forEach(function(p) {
+    p.classList.remove('on');
+  });
+
+  // Show the target page
+  var target = document.getElementById(page);
+  if (target) {
+    target.classList.add('on');
+  }
+
+  // Update active state on nav links
+  document.querySelectorAll('.nl').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('.nl').forEach(function(btn) {
+    if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf("go('" + page + "')") !== -1) {
+      btn.classList.add('active');
+    }
+  });
+
+  // Scroll to anchor if provided, otherwise scroll to top
+  if (anchor) {
+    var el = document.getElementById(anchor);
+    if (el) {
+      setTimeout(function() { el.scrollIntoView({ behavior: 'smooth' }); }, 50);
+    }
+  } else {
+    window.scrollTo(0, 0);
+  }
+}
+
+// Set initial active nav state on load
+document.addEventListener('DOMContentLoaded', function() {
+  var home = document.querySelector('.nl[onclick*="home"]');
+  // No active highlight needed on load — home is default
+});
+</script>
