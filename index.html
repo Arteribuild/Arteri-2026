@@ -502,10 +502,11 @@ Identified practical opportunities that improved staff experience, with a
         </div>
         <div style="display:flex;flex-direction:column;justify-content:center">
           <div class="news-input-wrap" id="news-form">
-            <input type="email" class="news-input" placeholder="your@email.com.au">
-            <button class="news-btn" onclick="document.getElementById('news-form').style.display='none';document.getElementById('news-thanks').style.display='block'">Subscribe</button>
+            <input type="email" id="news-email" class="news-input" placeholder="your@email.com.au">
+            <button class="news-btn" onclick="subscribeMailchimp()">Subscribe</button>
           </div>
-          <div id="news-thanks" style="display:none;font-size:0.9rem;font-weight:300;color:var(--ink2);padding:14px 0">Thanks. we will be in touch occasionally.</div>
+          <div id="news-thanks" style="display:none;font-size:0.9rem;font-weight:300;color:var(--ink2);padding:14px 0">Thanks. We will be in touch occasionally.</div>
+          <div id="news-error" style="display:none;font-size:0.9rem;font-weight:300;color:var(--red);padding:14px 0"></div>
           <p style="font-size:0.75rem;font-weight:300;color:var(--ink3);margin-top:10px">We send occasional emails. Unsubscribe any time.</p>
         </div>
       </div>
@@ -733,6 +734,56 @@ streamlined services. Left a clear framework for evaluating and piloting
   <div class="cta-band"><div class="cta-inner"><h2 class="cta-h">Ready to elevate your team's skills?</h2><div><p class="cta-body">Explore Arteri Academy and discover how we can help your team drive better business outcomes.</p><button class="btn-red" onclick="go('contact')">Get in touch</button></div></div></div>
   <footer><div class="ft-brand"><div class="ft-logo"><img src="images/Arteri.png" alt="Arteri"></div><div class="ft-tag">Health &amp; Essential Services Design Studio. Designing organisations that support people through life's most complex moments.</div></div><div class="ft-col"><span class="ft-lbl">Services</span><a onclick="go('home','svc-business')">Business &amp; Service Design</a><a onclick="go('home','svc-policy')">Poli
 <script>
+function subscribeMailchimp() {
+  var email = document.getElementById('news-email').value.trim();
+  var errEl = document.getElementById('news-error');
+  var thanksEl = document.getElementById('news-thanks');
+  var formEl = document.getElementById('news-form');
+
+  errEl.style.display = 'none';
+  errEl.textContent = '';
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  var cbName = 'mcCallback_' + Date.now();
+  var url = 'https://arteri.us12.list-manage.com/subscribe/post-json'
+    + '?u=84d8f02f4b4099b574974639d'
+    + '&id=b1363ed785'
+    + '&f_id=00a942e0f0'
+    + '&EMAIL=' + encodeURIComponent(email)
+    + '&b_84d8f02f4b4099b574974639d_b1363ed785='
+    + '&c=' + cbName;
+
+  window[cbName] = function(data) {
+    delete window[cbName];
+    document.body.removeChild(script);
+    if (data.result === 'success') {
+      formEl.style.display = 'none';
+      thanksEl.style.display = 'block';
+    } else {
+      var msg = data.msg || 'Something went wrong. Please try again.';
+      // Strip Mailchimp's "0 - " prefix if present
+      msg = msg.replace(/^\d+\s*-\s*/, '');
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+  };
+
+  var script = document.createElement('script');
+  script.src = url;
+  script.onerror = function() {
+    delete window[cbName];
+    document.body.removeChild(script);
+    errEl.textContent = 'Could not connect. Please try again later.';
+    errEl.style.display = 'block';
+  };
+  document.body.appendChild(script);
+}
+
 function toggleMenu() {
   var nav = document.getElementById('nav-links');
   var btn = document.getElementById('hamburger');
