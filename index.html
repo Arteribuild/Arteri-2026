@@ -28,6 +28,11 @@ body{font-family:var(--sans);background:var(--linen);color:var(--ink);-webkit-fo
 .pg{display:none;opacity:0}.pg.on{display:block;opacity:0}.pg.on.visible{opacity:1;transition:opacity .25s ease}
 
 nav{background:var(--navy-deep);padding:0 52px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:2px;background:rgba(255,255,255,0.8);transition:all .2s ease}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .logo{display:flex;align-items:center;cursor:pointer}
 .logo img{height:24px;width:auto;display:block;opacity:0.92}
 .nav-links{display:flex;align-items:center;gap:32px}
@@ -217,7 +222,10 @@ textarea.fi{resize:none;min-height:90px;line-height:1.7}
 .mission-content{padding:64px 56px;display:flex;flex-direction:column;justify-content:center;background:var(--navy-tint)}
 
 @media(max-width:900px){
-  nav{padding:0 24px}.wrap{padding:0 24px}
+  nav{padding:0 20px}.wrap{padding:0 24px}
+  .nav-links{gap:20px}
+  .nl{font-size:0.8rem}
+  .nl-cta{font-size:0.8rem;padding:8px 14px}
   .hero-inner{padding:60px 24px 52px}
   .hero-bar{grid-template-columns:1fr 1fr}.hbi{padding:16px 20px}
   .split,.ph-inner{grid-template-columns:1fr;gap:32px}
@@ -235,6 +243,17 @@ textarea.fi{resize:none;min-height:90px;line-height:1.7}
   .ir{grid-template-columns:36px 1fr}.ir-exc,.ir-meta{display:none}
   .news-sec{padding:60px 0}
   .mission-content{padding:48px 32px}
+}
+
+@media(max-width:540px){
+  nav{padding:0 20px;height:60px}
+  .hamburger{display:flex}
+  .nav-links{display:none;position:absolute;top:60px;left:0;right:0;background:var(--navy-deep);flex-direction:column;align-items:flex-start;gap:0;padding:8px 0;border-top:1px solid rgba(255,255,255,0.08)}
+  .nav-links.open{display:flex}
+  .nl{padding:14px 20px;width:100%;font-size:0.9rem}
+  .nl::after{display:none}
+  .nl.active{background:rgba(255,255,255,0.06)}
+  .nl-cta{margin:8px 20px 12px;padding:10px 20px;font-size:0.9rem}
 }
 
 .article-wrap{max-width:720px;margin:0 auto;padding:0 52px}
@@ -271,7 +290,10 @@ textarea.fi{resize:none;min-height:90px;line-height:1.7}
 
 <nav>
   <div class="logo" onclick="go('home')"><img src="images/Arteri.png" alt="Arteri"></div>
-  <div class="nav-links">
+  <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="nav-links">
     <button class="nl" onclick="go('about')">About</button>
     <button class="nl" onclick="go('work')">Our work</button>
     <button class="nl" onclick="go('insights')">Insights</button>
@@ -711,7 +733,19 @@ streamlined services. Left a clear framework for evaluating and piloting
   <div class="cta-band"><div class="cta-inner"><h2 class="cta-h">Ready to elevate your team's skills?</h2><div><p class="cta-body">Explore Arteri Academy and discover how we can help your team drive better business outcomes.</p><button class="btn-red" onclick="go('contact')">Get in touch</button></div></div></div>
   <footer><div class="ft-brand"><div class="ft-logo"><img src="images/Arteri.png" alt="Arteri"></div><div class="ft-tag">Health &amp; Essential Services Design Studio. Designing organisations that support people through life's most complex moments.</div></div><div class="ft-col"><span class="ft-lbl">Services</span><a onclick="go('home','svc-business')">Business &amp; Service Design</a><a onclick="go('home','svc-policy')">Poli
 <script>
+function toggleMenu() {
+  var nav = document.getElementById('nav-links');
+  var btn = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
 function go(page, anchor) {
+  // Close mobile menu if open
+  var nav = document.getElementById('nav-links');
+  var btn = document.getElementById('hamburger');
+  if (nav) nav.classList.remove('open');
+  if (btn) btn.classList.remove('open');
   // Fade out all visible pages
   document.querySelectorAll('.pg.on').forEach(function(p) {
     p.classList.remove('visible');
